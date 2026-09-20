@@ -35,9 +35,12 @@ app.get("/verify-payment", (_req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log("Button legacy compatibility server running on port " + PORT);
+    console.log("Electronic payments are disabled here; use the canonical Button backend.");
+  });
+}
 
-app.listen(PORT, () => {
-  console.log("Button legacy compatibility server running on port " + PORT);
-  console.log("Electronic payments are disabled here; use the canonical Button backend.");
-});
+module.exports = app;

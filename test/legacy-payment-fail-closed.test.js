@@ -16,7 +16,7 @@ async function withServer(run) {
   }
 }
 
-test('legacy payment endpoints can never report payment success', async () => {
+test('legacy payment endpoints can never report payment or refund success', async () => {
   await withServer(async baseUrl => {
     const create = await fetch(`${baseUrl}/create-payment`, {
       method: 'POST',
@@ -34,5 +34,15 @@ test('legacy payment endpoints can never report payment success', async () => {
     assert.equal(verifyBody.code, 'PAYMENT_PROVIDER_DISABLED');
     assert.equal(verifyBody.valid, false);
     assert.equal(verifyBody.paid, false);
+
+    const refund = await fetch(`${baseUrl}/refund-payment`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ paymentId: 'fake-success', forceSuccess: true, refunded: true }),
+    });
+    assert.equal(refund.status, 503);
+    const refundBody = await refund.json();
+    assert.equal(refundBody.code, 'PAYMENT_PROVIDER_DISABLED');
+    assert.equal(refundBody.refunded, false);
   });
 });

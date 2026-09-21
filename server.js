@@ -35,6 +35,14 @@ app.get("/verify-payment", (_req, res) => {
   });
 });
 
+app.post("/refund-payment", (_req, res) => {
+  res.status(503).json({
+    refunded: false,
+    error: "Payment refunds are unavailable on this legacy service.",
+    code: "PAYMENT_PROVIDER_DISABLED"
+  });
+});
+
 if (require.main === module) {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
